@@ -1,0 +1,40 @@
+# Ablation-table runs (the -BiomassHead row is the "gnn" method of main_comparison.yaml).
+shared:
+  n_folds: 5
+  rate_clip_max: 5.0
+  monotonicity_tolerance: 0.0
+  loss_type: RMSE
+  readouts_to_aggregate: [biomass_rate, o2_consumption_rate, sugar_consumption_rate, carotenoids_rate, astaxanthin_rate]
+  readout_to_target_mapping: {biomass_rate: interpolated_biomass, o2_consumption_rate: cumulated_o2_consumption, sugar_consumption_rate: cumulated_sugar_consumption,
+    carotenoids_rate: carotenoids, astaxanthin_rate: astaxanthin}
+  specific_rate_readouts: [o2_consumption_rate, sugar_consumption_rate, carotenoids_rate, astaxanthin_rate]
+  biomass_readout: biomass_rate
+  biomass_target: interpolated_biomass
+ablations:
+  specific_rate_use_measured_biomass: false
+  methods:
+    no_pretrain_seed42: {type: gnn, seed: 42, config_path: configs/ablations/no_pretrain.yaml}
+    no_pretrain_seed43: {type: gnn, seed: 43, config_path: configs/ablations/no_pretrain.yaml}
+    no_pretrain_seed44: {type: gnn, seed: 44, config_path: configs/ablations/no_pretrain.yaml}
+    no_pretrain_seed45: {type: gnn, seed: 45, config_path: configs/ablations/no_pretrain.yaml}
+    no_pretrain_seed46: {type: gnn, seed: 46, config_path: configs/ablations/no_pretrain.yaml}
+    no_expr_seed42: {type: gnn, seed: 42, config_path: configs/ablations/no_expr.yaml}
+    no_expr_seed43: {type: gnn, seed: 43, config_path: configs/ablations/no_expr.yaml}
+    no_expr_seed44: {type: gnn, seed: 44, config_path: configs/ablations/no_expr.yaml}
+    no_expr_seed45: {type: gnn, seed: 45, config_path: configs/ablations/no_expr.yaml}
+    no_expr_seed46: {type: gnn, seed: 46, config_path: configs/ablations/no_expr.yaml}
+    no_pretrain_no_expr_seed42: {type: gnn, seed: 42, config_path: configs/ablations/no_pretrain_no_expr.yaml}
+    no_pretrain_no_expr_seed43: {type: gnn, seed: 43, config_path: configs/ablations/no_pretrain_no_expr.yaml}
+    no_pretrain_no_expr_seed44: {type: gnn, seed: 44, config_path: configs/ablations/no_pretrain_no_expr.yaml}
+    no_pretrain_no_expr_seed45: {type: gnn, seed: 45, config_path: configs/ablations/no_pretrain_no_expr.yaml}
+    no_pretrain_no_expr_seed46: {type: gnn, seed: 46, config_path: configs/ablations/no_pretrain_no_expr.yaml}
+    no_gnn_seed42: {type: gnn, seed: 42, config_path: configs/ablations/no_gnn.yaml}
+    no_gnn_seed43: {type: gnn, seed: 43, config_path: configs/ablations/no_gnn.yaml}
+    no_gnn_seed44: {type: gnn, seed: 44, config_path: configs/ablations/no_gnn.yaml}
+    no_gnn_seed45: {type: gnn, seed: 45, config_path: configs/ablations/no_gnn.yaml}
+    no_gnn_seed46: {type: gnn, seed: 46, config_path: configs/ablations/no_gnn.yaml}
+    no_freeze_seed42: {type: gnn, seed: 42, config_path: configs/ablations/no_freeze.yaml}
+    no_freeze_seed43: {type: gnn, seed: 43, config_path: configs/ablations/no_freeze.yaml}
+    no_freeze_seed44: {type: gnn, seed: 44, config_path: configs/ablations/no_freeze.yaml}
+    no_freeze_seed45: {type: gnn, seed: 45, config_path: configs/ablations/no_freeze.yaml}
+    no_freeze_seed46: {type: gnn, seed: 46, config_path: configs/ablations/no_freeze.yaml}

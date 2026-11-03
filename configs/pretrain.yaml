@@ -1,0 +1,95 @@
+# Masked-flux pretraining of the GEM-graph encoder on an FBA flux corpus
+# (configuration of the released checkpoint, which is the epoch-20 snapshot).
+# ${MNM_DATA_DIR}/flux_corpus.parquet defaults to the small synthetic demo corpus (see docs/data_format.md).
+dataset:
+  class: dataset.flux_corpus
+  name: FluxCorpus
+  sbml_path: data/gem/iyli21_modified.xml
+  flux_path: ${MNM_DATA_DIR}/flux_corpus.parquet
+  min_near_opt_frac: 0.95
+  max_near_opt_frac: 0.95
+  flux_stat_eps: 0.0001
+  time_column: time
+  time_stage_boundaries: [21.0, 27.0]
+  time_stage_ratios: [1.0, 1.0, 1.0]
+  val_ratio: 0.05
+  test_ratio: 0.05
+  split_seed: 12345
+  stratification_seed: 0
+task:
+  class: task.masked_flux_pretrain
+  mask_rate: 0.15
+  mask_positive_eps: 0.001
+  log_eps: 0.001
+  zero_flux_loss_weight: 1.0
+  zero_flux_eps: -1            # = mask_positive_eps
+  loss_eps: 0.0001
+  active_eps: 0.1
+  loss_bin_boundaries: [0.0, 1.0e-4, 1.0e-3, 1.0e-2, 1.0e-1, 1000.0]
+  loss_bin_weights: [0, 0, 0.6, 0.8, 1.0]
+  eval_mask_seed: 0
+  model:
+    class: model.metabolic_gnn
+    mode: pretrain
+    d_model: 128
+    gnn_backbone:
+      class: model.gat_encoder
+      hidden_dim: 400
+      num_layers: 3
+      heads: 2
+      attn_dropout: 0.1
+      feat_dropout: 0.1
+      activation: relu
+      norm: layer
+      add_self_loops: true
+    gnn_grad_checkpoint: true
+    gnn_phase_chunk_size: 1
+    adapter:
+      dropout: 0.1
+    input_heads:
+      metabolites:
+        embedding_dim: 300
+        mode: mean
+        use_stoichiometry_weight: true
+      gene_counts:
+        embedding_dim: 128
+        mode: mean
+    use_film: true               # FiLM generator is built (zero conditioning in pretraining)
+    film_dim: 128
+    gamma_initial: 0.01
+    readout_heads:               # unused in pretraining
+      all_readouts:
+        class: model.gru_readout
+        readout_names: [dummy]
+    readout_reaction_ids:
+      dummy: [biomass_C]
+trainer:
+  epochs: 20
+  lr: 0.001
+  batch_size: 5
+  shuffle: true
+  num_workers: 4
+  pin_memory: true
+  device: auto
+  optimizer:
+    class: optimizer.adam
+  lr_scheduler:
+    class: scheduler.reduce_on_plateau
+    mode: min
+    factor: 0.5
+    patience: 2
+    threshold: 0.0
+    cooldown: 0
+    min_lr: 1.0e-06
+  early_stopping:
+    monitor: val_loss
+    mode: min
+    patience: 1000
+    min_delta: 0.0
+    min_epoch: 0
+  checkpoint:
+    enabled: true
+    save_best: true
+    monitor: val_loss
+    mode: min
+    save_every_n_epochs: 5

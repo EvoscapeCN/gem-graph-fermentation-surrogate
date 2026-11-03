@@ -1,0 +1,24 @@
+# Pinned to the versions the code was tested with (CPU smoke test). The paper's
+# runs used a PyTorch 2.10 development build with CUDA 12.8; any CUDA build of
+# torch 2.10 should work on GPU.
+name: mnm
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pip
+  - numpy=2.2.6
+  - pandas=2.3.3
+  - scipy=1.15.2
+  - scikit-learn=1.7.2
+  - statsmodels=0.14.5
+  - pyarrow=21.0.0
+  - pyyaml=6.0.3
+  - matplotlib=3.10.6
+  - pytest=8.4.2
+  - pip:
+      - torch==2.10.0
+      - torch_geometric==2.6.1
+      - cobra==0.29.1
+      - xgboost==3.2.0
+      - lmoments3==1.0.8

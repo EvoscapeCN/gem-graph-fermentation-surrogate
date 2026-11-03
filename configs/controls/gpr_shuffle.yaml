@@ -1,0 +1,72 @@
+# Gene-routing control (structural-controls table): gene sets permuted across reactions.
+# dataset.gpr_shuffle_seed is set per model seed in configs/experiments/controls.yaml.
+dataset:
+  class: dataset.fermentation
+  name: Fermentation
+  sbml_path: data/gem/iyli21_modified.xml
+  metadata_csv_path: ${MNM_DATA_DIR}/metadata.csv
+  metrics_csv_path: ${MNM_DATA_DIR}/time_series.csv
+  gene_counts_csv_path: ${MNM_DATA_DIR}/gene_expression.csv
+  culture_medium_reference_csv_path: ${MNM_DATA_DIR}/culture_medium_reference.csv
+  assay_metrics: [cumulated_o2_consumption, cumulated_sugar_consumption, interpolated_biomass, carotenoids, astaxanthin]
+  sensor_metrics: [time, agitation_speed, temp, feed_temp, ph, do]
+  initial_condition_fields: [initial_od, culture_medium_change]
+  split_ratio: [0.8, 0.1, 0.1]
+  split_seed: 42
+  expression_pca_components: 16
+task:
+  class: task.fermentation
+  model:
+    class: model.metabolic_gnn
+    mode: finetune
+    d_model: 128
+    gnn_backbone: {class: model.gat_encoder, hidden_dim: 400, num_layers: 3, heads: 2, attn_dropout: 0.1, feat_dropout: 0.1,
+      activation: relu, norm: layer, add_self_loops: true}
+    gnn_grad_checkpoint: true
+    gnn_phase_chunk_size: 1
+    adapter: {dropout: 0.1}
+    input_heads:
+      metabolites: {embedding_dim: 300, mode: mean, use_stoichiometry_weight: true}
+      gene_counts: {embedding_dim: 128, mode: rel_mean}
+    use_film: false
+    film_dim: 128
+    gamma_initial: 0.01
+    biomass_head: {enabled: true, hidden_dim: 128, num_layers: 2, dropout: 0.1}
+    expression_readout_adapter: {enabled: true, input: rna_gene_pcs, hidden_dim: 32, out_dim: 16, dropout: 0.1}
+    readout_heads:
+      all_readouts:
+        class: model.gru_readout
+        readout_names: [o2_consumption_rate, sugar_consumption_rate, carotenoids_rate, astaxanthin_rate]
+        hidden_dim: 128
+        num_layers: 1
+        dropout: 0.1
+        head_hidden_dim: 64
+        head_layers: 2
+        head_dropout: 0.1
+        head_final_activation: none
+    readout_reaction_ids:
+      o2_consumption_rate: [R1287]
+      sugar_consumption_rate: [R1070]
+      carotenoids_rate: [xpigment]
+      astaxanthin_rate: [R2308, R2302]
+    checkpoint_path: checkpoints/pretrained_encoder.pt
+    checkpoint_load_modules: [gnn, adapter, metabolites_encoder, flux_encoder]
+    checkpoint_strict: true
+    freeze_modules: [pretrain]
+    freeze_epochs: 15
+  readout_to_target_mapping: {o2_consumption_rate: cumulated_o2_consumption, sugar_consumption_rate: cumulated_sugar_consumption,
+    biomass_rate: interpolated_biomass, carotenoids_rate: carotenoids, astaxanthin_rate: astaxanthin}
+  loss_type: RMSE
+  readout_is_specific_rate: true
+  readout_specific_rate_use_measured_biomass: false
+  specific_rate_detach_biomass: true
+  monotonicity_tolerance: 0.0
+trainer:
+  epochs: 50
+  lr: 0.001
+  device: cuda
+  amp: true
+  batch_size: 1
+  lr_scheduler: {class: scheduler.reduce_on_plateau, mode: min, factor: 0.5, patience: 5, threshold: 0.0, cooldown: 0, min_lr: 1.0e-06}
+  checkpoint: {enabled: true, save_best: true, save_every_n_epochs: 10, monitor: val_loss, mode: min}
+  early_stopping: {monitor: val_loss, mode: min, patience: 20, min_delta: 0.0, min_epoch: 5}

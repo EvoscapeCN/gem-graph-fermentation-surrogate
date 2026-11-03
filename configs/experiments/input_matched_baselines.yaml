@@ -1,0 +1,39 @@
+# Appendix: flat baselines on the GPR genes only and on the 16 training-split PCs of the readout features.
+shared:
+  n_folds: 5
+  rate_clip_max: 5.0
+  monotonicity_tolerance: 0.0
+  loss_type: RMSE
+  readouts_to_aggregate: [biomass_rate, o2_consumption_rate, sugar_consumption_rate, carotenoids_rate, astaxanthin_rate]
+  readout_to_target_mapping: {biomass_rate: interpolated_biomass, o2_consumption_rate: cumulated_o2_consumption, sugar_consumption_rate: cumulated_sugar_consumption,
+    carotenoids_rate: carotenoids, astaxanthin_rate: astaxanthin}
+  specific_rate_readouts: [o2_consumption_rate, sugar_consumption_rate, carotenoids_rate, astaxanthin_rate]
+  biomass_readout: biomass_rate
+  biomass_target: interpolated_biomass
+input_matched_baselines:
+  specific_rate_use_measured_biomass: false
+  methods:
+    ridge_gpr_seed42: {type: flat_ml, model: ridge, target_mode: specific, seed: 42, config_path: configs/finetune_main.yaml,
+      use_gpr_genes: true}
+    xgb_gpr_seed42: {type: flat_ml, model: xgboost, target_mode: specific, seed: 42, config_path: configs/finetune_main.yaml,
+      use_gpr_genes: true}
+    xgb_gpr_seed43: {type: flat_ml, model: xgboost, target_mode: specific, seed: 43, config_path: configs/finetune_main.yaml,
+      use_gpr_genes: true}
+    xgb_gpr_seed44: {type: flat_ml, model: xgboost, target_mode: specific, seed: 44, config_path: configs/finetune_main.yaml,
+      use_gpr_genes: true}
+    xgb_gpr_seed45: {type: flat_ml, model: xgboost, target_mode: specific, seed: 45, config_path: configs/finetune_main.yaml,
+      use_gpr_genes: true}
+    xgb_gpr_seed46: {type: flat_ml, model: xgboost, target_mode: specific, seed: 46, config_path: configs/finetune_main.yaml,
+      use_gpr_genes: true}
+    ridge_pca16_seed42: {type: flat_ml, model: ridge, target_mode: specific, seed: 42, config_path: configs/finetune_main.yaml,
+      gene_input: pcs}
+    xgb_pca16_seed42: {type: flat_ml, model: xgboost, target_mode: specific, seed: 42, config_path: configs/finetune_main.yaml,
+      gene_input: pcs}
+    xgb_pca16_seed43: {type: flat_ml, model: xgboost, target_mode: specific, seed: 43, config_path: configs/finetune_main.yaml,
+      gene_input: pcs}
+    xgb_pca16_seed44: {type: flat_ml, model: xgboost, target_mode: specific, seed: 44, config_path: configs/finetune_main.yaml,
+      gene_input: pcs}
+    xgb_pca16_seed45: {type: flat_ml, model: xgboost, target_mode: specific, seed: 45, config_path: configs/finetune_main.yaml,
+      gene_input: pcs}
+    xgb_pca16_seed46: {type: flat_ml, model: xgboost, target_mode: specific, seed: 46, config_path: configs/finetune_main.yaml,
+      gene_input: pcs}

@@ -1,0 +1,33 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite the paper below."
+title: "Toward in Silico Strain Evaluation: A Multimodal Surrogate for Fermentation Dynamics with Metabolic Graph Pretraining"
+authors:
+  - given-names: Yunxiao
+    family-names: Li
+    affiliation: Evoscape Bioscience
+  - given-names: Difeng
+    family-names: Gao
+    affiliation: Evoscape Bioscience
+  - given-names: Yubin
+    family-names: Zheng
+    affiliation: Evoscape Bioscience
+  - given-names: Jijiao
+    family-names: Zeng
+    affiliation: "Evoscape Bioscience; Institute of Health and Medicine, Hefei Comprehensive National Science Center"
+repository-code: "https://github.com/EvoscapeCN/gem-graph-fermentation-surrogate"
+license: PolyForm-Noncommercial-1.0.0
+type: software
+preferred-citation:
+  type: conference-paper
+  title: "Toward in Silico Strain Evaluation: A Multimodal Surrogate for Fermentation Dynamics with Metabolic Graph Pretraining"
+  authors:
+    - given-names: Yunxiao
+      family-names: Li
+    - given-names: Difeng
+      family-names: Gao
+    - given-names: Yubin
+      family-names: Zheng
+    - given-names: Jijiao
+      family-names: Zeng
+  collection-title: "Advances in Neural Information Processing Systems (NeurIPS 2026)"
+  year: 2026
